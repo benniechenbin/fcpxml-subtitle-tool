@@ -1,0 +1,58 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "core-data-agent-skill",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Antoine van der Lee",
+    "email": "contact@avanderlee.com"
+  },
+  "metadata": {
+    "description": "Expert guidance on Core Data: persistence, data modeling, threading, performance optimization, and CloudKit integration."
+  },
+  "plugins": [
+    {
+      "name": "core-data-expert",
+      "description": "Expert guidance on Core Data persistence, data modeling, and performance. Covers NSPersistentContainer, fetch optimization, threading with NSManagedObjectID, batch operations, schema migration, and NSPersistentCloudKitContainer integration.",
+      "repository": "https://github.com/AvdLee/Core-Data-Agent-Skill",
+      "version": "1.0.0",
+      "author": {
+        "name": "Antoine van der Lee",
+        "email": "contact@avanderlee.com"
+      },
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "core-data",
+        "coredata",
+        "persistence",
+        "database",
+        "sqlite",
+        "cloudkit",
+        "nspersistentcontainer",
+        "nsmanagedobject",
+        "fetch-requests",
+        "threading",
+        "migration",
+        "ios",
+        "macos",
+        "swift",
+        "apple"
+      ],
+      "tags": [
+        "core-data",
+        "persistence",
+        "database",
+        "cloudkit",
+        "ios",
+        "macos",
+        "swift",
+        "apple-platforms"
+      ],
+      "source": "./",
+      "skills": [
+        "./core-data-expert"
+      ],
+      "strict": false
+    }
+  ]
+}
