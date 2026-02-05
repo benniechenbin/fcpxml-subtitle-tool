@@ -35,30 +35,37 @@ function log(msg, type = 'INFO') {
 let globalBlocks = []; let isBilingualMode = false;
 // 注意：这里我们稍后在 DOMContentLoaded 事件中绑定监听器，防止找不到元素
 
-function processFile(file) {
+// 🔄 升级版 processFile：支持异步等待编码识别
+async function processFile(file) {
     log(`Reading file: ${file.name}`);
     const ext = file.name.split('.').pop().toLowerCase();
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = e.target.result;
-        try {
-            if (ext === 'srt') globalBlocks = parseSRT(content);
-            else if (ext === 'vtt') globalBlocks = parseVTT(content);
-            else if (ext === 'ass' || ext === 'ssa') globalBlocks = parseASS(content);
-            else if (ext === 'fcpxml' || ext === 'xml') globalBlocks = parseFCPXML(content);
-            else throw new Error("Unsupported format");
-            
-            if(globalBlocks.length === 0) throw new Error("Empty content");
-            globalBlocks.sort((a, b) => a.start - b.start);
-            log(`Parsed ${globalBlocks.length} subtitles.`, 'SUCCESS');
-            
-            const fileInfo = document.getElementById('fileInfo');
-            fileInfo.innerText = file.name; 
-            fileInfo.classList.remove('hidden');
-            isBilingualMode = false;
-        } catch (err) { log(`Error: ${err.message}`, 'ERR'); }
-    };
-    reader.readAsText(file);
+    
+    try {
+        // 1. 调用万能解码器获取内容 (不管是 GBK 还是 UTF-8，这里拿到的都是标准文本)
+        const content = await readFileAutoDetect(file);
+
+        // 2. 开始解析
+        if (ext === 'srt') globalBlocks = parseSRT(content);
+        else if (ext === 'vtt') globalBlocks = parseVTT(content);
+        else if (ext === 'ass' || ext === 'ssa') globalBlocks = parseASS(content);
+        else if (ext === 'fcpxml' || ext === 'xml') globalBlocks = parseFCPXML(content);
+        else throw new Error("Unsupported format");
+        
+        if(globalBlocks.length === 0) throw new Error("Empty content");
+        
+        // 3. 排序与更新 UI
+        globalBlocks.sort((a, b) => a.start - b.start);
+        log(`Parsed ${globalBlocks.length} subtitles.`, 'SUCCESS');
+        
+        const fileInfo = document.getElementById('fileInfo');
+        fileInfo.innerText = file.name; 
+        fileInfo.classList.remove('hidden');
+        isBilingualMode = false;
+
+    } catch (err) { 
+        log(`Error: ${err.message}`, 'ERR'); 
+        console.error(err);
+    }
 }
 
 // 将全局函数挂载到 window 对象上，以便 HTML 中的 onclick 可以调用
@@ -186,3 +193,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearBtn = document.querySelector('button[onclick*="innerHTML=\'\'"]');
     if(clearBtn) clearBtn.onclick = () => document.getElementById('consoleLog').innerHTML = '';
 });
+/**
+ * 🕵️‍♂️ 万能文件读取器 (终极版)
+ * 逻辑：尝试 UTF-8 -> 失败则尝试 GBK -> 失败则尝试 Big5 -> 兜底
+ */
+function readFileAutoDetect(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        // 关键：读取为二进制流，不要让浏览器自作主张
+        reader.readAsArrayBuffer(file);
+        
+        reader.onload = (e) => {
+            const buffer = e.target.result;
+            
+            // 1. 第一关：尝试标准 UTF-8 (严格模式)
+            const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
+            try {
+                const text = utf8Decoder.decode(buffer);
+                console.log("✅ 识别编码: UTF-8");
+                resolve(text);
+                return;
+            } catch (err) {
+                console.log("⚠️ 非 UTF-8，尝试 GBK...");
+            }
+
+            // 2. 第二关：尝试 GB18030 (中文简体通用，兼容 GBK/GB2312)
+            const gbkDecoder = new TextDecoder('gb18030', { fatal: true });
+            try {
+                const text = gbkDecoder.decode(buffer);
+                console.log("✅ 识别编码: GB18030 (中文简体)");
+                resolve(text);
+                return;
+            } catch (err) {
+                console.log("⚠️ 非 GBK，尝试 Big5...");
+            }
+
+            // 3. 第三关：尝试 Big5 (中文繁体)
+            const big5Decoder = new TextDecoder('big5', { fatal: true });
+            try {
+                const text = big5Decoder.decode(buffer);
+                console.log("✅ 识别编码: Big5 (中文繁体)");
+                resolve(text);
+                return;
+            } catch (err) {
+                console.warn("❌ 无法识别编码，尝试强制 UTF-8 读取");
+                // 4. 最后的倔强：非严格模式读取
+                const fallbackDecoder = new TextDecoder('utf-8');
+                resolve(fallbackDecoder.decode(buffer));
+            }
+        };
+
+        reader.onerror = () => reject("文件读取系统错误");
+    });
+}
