@@ -31,7 +31,6 @@ A professional, privacy-first web tool designed for **Final Cut Pro** editors. C
 #### Option 1: Online Usage (Recommended)
 Visit the GitHub Pages link:
 > **[🔗 Click here to open FCPXML Subtitle Tool](https://benniechenbin.github.io/fcpxml-subtitle-tool/)**
-> *(Replace this link after you activate GitHub Pages)*
 
 #### Option 2: Run Locally
 1.  Clone or download this repository.
@@ -82,7 +81,6 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 #### 方法一：在线使用 (推荐)
 直接访问 GitHub Pages 页面：
 > **[🔗 点击这里使用 FCPXML Subtitle Tool](https://benniechenbin.github.io/fcpxml-subtitle-tool/)**
-> *(请在 GitHub 设置 Pages 后替换此链接)*
 
 #### 方法二：本地运行
 1.  下载本仓库代码 (`Code` -> `Download ZIP`)。
@@ -111,3 +109,4 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 ### 📄 License
 
 MIT License. Free for everyone.
+
