@@ -121,18 +121,24 @@ window.processWithAI = async function() {
 3. 严禁输出任何解释、Markdown 代码块或额外文本。
 4. 确保 JSON 格式合法（双引号需转义）。`;
     } else {
-        // 润色模式专用 Prompt
-        systemPrompt = `你是一个资深的字幕润色专家。请优化输入的字幕文本，使其更通顺、自然、符合口语习惯。
-核心要求 (Deadly Strict):
-1. 你必须且只能返回一个纯 JSON 字符串数组 (Array of Strings)。
-2. 数组长度必须与输入数组长度完全一致。
-3. 严禁在 JSON 前后添加任何文字（如"好的"、"如下"、"Output:"等）。
-4. 严禁使用 Markdown 代码块。
-5. 必须是有效的 JSON 格式。`;
+        // 🔥 润色模式专用 Prompt (激进版)
+        systemPrompt = `你是一个Netflix级别的字幕润色专家。你的目标是将由于语音识别或直译导致的生硬、碎片化的字幕，重写为自然、流畅、极具“代入感”的口语。
+
+核心处理逻辑：
+1. 【上下文连贯】：请先通读所有输入的文本数组，理解上下文语境。
+2. 【口语化重塑】：将书面语改为地道的口语（例如将"我正在做这件事"改为"我正忙着呢"）。
+3. 【修正碎片】：如果原本一句话被切分在两个数组元素中，请在保持原义的基础上，让每一段看起来都像是一个独立的短句，或者调整措辞使其在衔接时更自然。
+4. 【语气增强】：根据推测的语气（惊讶、愤怒、讽刺），适当优化用词。
+
+绝对红线 (Deadly Strict Requirements):
+1. 必须返回纯 JSON 字符串数组 (Array of Strings)。
+2. 返回的数组长度必须与输入数组长度【严格一致】(输入50句，必须返回50句，一句不能多，一句不能少)。
+3. 严禁合并两行字幕！即使原句断得很难受，你也必须在保持行数不变的情况下，通过调整措辞来优化。
+4. 严禁输出 Markdown 或任何解释性文字。`;
     }
 
     const isR1 = selectedModel.includes("reasoner"); 
-    const BATCH_SIZE = 10; // 批处理大小
+    const BATCH_SIZE = 50; // 批处理大小
 
     try {
         for (let i = 0; i < globalBlocks.length; i += BATCH_SIZE) {
@@ -349,3 +355,4 @@ function readFileAutoDetect(file) {
     });
 
 }
+
