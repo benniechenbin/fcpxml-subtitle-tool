@@ -229,33 +229,7 @@ window.processWithAI = async function() {
         btnAI.disabled = false; 
     }
 }
-            // 8. 回填数据
-            batch.forEach((block, idx) => {
-                const trans = translatedArray[idx];
-                if (trans) { 
-                    if (mode === "bilingual") { 
-                        block.text = `${block.text}\n${trans}`; 
-                        isBilingualMode = true; 
-                    } else { 
-                        block.text = trans; // 润色模式直接覆盖
-                    } 
-                }
-            });
-
-            // 更新进度条
-            const pct = Math.round(((i + BATCH_SIZE) / globalBlocks.length) * 100);
-            pFill.style.width = `${Math.min(pct, 100)}%`; 
-        }
-        log("AI 处理全部完成！", 'SUCCESS');
-    } catch (err) { 
-        log(`错误: ${err.message}`, 'ERR'); 
-        console.error(err);
-    } finally { 
-        // 恢复按钮
-        btnAI.innerHTML = originalBtnText; 
-        btnAI.disabled = false; 
-    }
-}
+          
 
 window.exportFCPXML = function() {
     if (globalBlocks.length === 0) return log("Nothing to export.", 'WARN');
@@ -371,6 +345,7 @@ function readFileAutoDetect(file) {
     });
 
 }
+
 
 
 
