@@ -32,11 +32,14 @@ function log(msg, type = 'INFO') {
     consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
-let globalBlocks = []; let isBilingualMode = false;
+let globalBlocks = []; 
+let isBilingualMode = false;
+let currentFileName = "Untitled"; // 👈 新增这一行，用来记名字
 // 注意：这里我们稍后在 DOMContentLoaded 事件中绑定监听器，防止找不到元素
 
 // 🔄 升级版 processFile：支持异步等待编码识别
 async function processFile(file) {
+    currentFileName = file.name.replace(/\.[^/.]+$/, "");
     log(`Reading file: ${file.name}`);
     const ext = file.name.split('.').pop().toLowerCase();
     
@@ -243,8 +246,7 @@ window.processWithAI = async function() {
 window.exportFCPXML = function() {
     if (globalBlocks.length === 0) return log("Nothing to export.", 'WARN');
     const fontName = getSafeFont(document.getElementById('fontName').value);
-    const fileInput = document.getElementById('subFile'); // 这里重新获取
-    let fileName = fileInput.files[0] ? fileInput.files[0].name.replace(/\.[^/.]+$/, "") : "Untitled";
+    let fileName = currentFileName || "Untitled";
     const params = { fileName: fileName, fontName: fontName, fontSize: document.getElementById('fontSize').value, fontColor: hexToRgb(document.getElementById('fontColor').value), strokeColor: hexToRgb(document.getElementById('strokeColor').value), strokeWidth: document.getElementById('strokeWidth').value, yValue: document.getElementById('yValue').value };
     const xml = generateXML(globalBlocks, params);
     const suffix = isBilingualMode ? "_DUAL" : "_SUB";
@@ -355,4 +357,5 @@ function readFileAutoDetect(file) {
     });
 
 }
+
 
