@@ -81,54 +81,155 @@ window.setPos = function(val, btn) {
 }
 
 window.processWithAI = async function() {
+    // 1. 获取界面元素
     const apiKey = document.getElementById('apiKey').value.trim();
-    let apiBase = "https://api.deepseek.com/v1";
     const mode = document.getElementById('aiMode').value;
     const selectedModel = document.getElementById('modelSelect').value;
     const btnAI = document.getElementById('btnAI');
     const pFill = document.getElementById('progressFill');
     const progressBar = document.getElementById('progressBar');
 
-    if (globalBlocks.length === 0) return log("Please import subtitles first.", 'WARN');
-    if (!apiKey && !selectedModel.includes("qwen")) return log("API Key required for cloud models.", 'WARN');
-    if (selectedModel.includes("qwen") || selectedModel.includes("localhost")) apiBase = "http://localhost:11434/v1";
+    // 2. 基础检查
+    if (globalBlocks.length === 0) return log("请先导入字幕文件。", 'WARN');
+    // 如果是云端模型且没填 Key，报错 (Qwen/Ollama 不需要 Key)
+    if (!apiKey && !selectedModel.toLowerCase().includes("qwen") && !selectedModel.toLowerCase().includes("ollama")) {
+        return log("使用云端模型需要填写 API Key。", 'WARN');
+    }
 
-    btnAI.innerHTML = `Running...`; btnAI.disabled = true; progressBar.classList.remove('hidden');
-    log(`Starting AI Task (${mode})...`);
+    // 3. 智能 API 地址切换 (防止 localhost 报错)
+    let apiBase = "https://api.deepseek.com/v1";
+    // 逻辑：只有明确包含 local/ollama，或者包含 qwen 但不是 deepseek 时，才切本地
+    if (selectedModel.includes("local") || selectedModel.includes("ollama") || (selectedModel.includes("qwen") && !selectedModel.includes("deepseek"))) {
+        apiBase = "http://localhost:11434/v1";
+        console.log("🖥️ 切换到本地模式 (Ollama)");
+    }
 
-    let systemPrompt = mode === "bilingual" ? `你是一个字幕翻译工具。接收中文文本数组，返回英文翻译数组。要求：1. 返回纯 JSON 字符串数组。2. 数组长度必须与输入完全一致。3. 仅返回结果，不要解释。` : `你是一个字幕润色工具。返回纯 JSON 字符串数组，长度一致。`;
-    const isR1 = selectedModel.includes("reasoner"); const BATCH_SIZE = 10;
+    // 4. 锁定按钮，开始运行
+    const originalBtnText = btnAI.innerHTML;
+    btnAI.innerHTML = `Running...`; 
+    btnAI.disabled = true; 
+    progressBar.classList.remove('hidden');
+    log(`开始 AI 任务: ${mode}...`);
+
+    // 5. 定义超级严格的 System Prompt (针对润色优化)
+    let systemPrompt = "";
+    if (mode === "bilingual") {
+        systemPrompt = `你是一个专业的字幕翻译工具。接收中文文本数组，返回英文翻译数组。
+要求：
+1. 仅返回一个纯 JSON 字符串数组 (Array of Strings)。
+2. 数组长度必须与输入数组长度完全一致 (一一对应)。
+3. 严禁输出任何解释、Markdown 代码块或额外文本。
+4. 确保 JSON 格式合法（双引号需转义）。`;
+    } else {
+        // 润色模式专用 Prompt
+        systemPrompt = `你是一个资深的字幕润色专家。请优化输入的字幕文本，使其更通顺、自然、符合口语习惯。
+核心要求 (Deadly Strict):
+1. 你必须且只能返回一个纯 JSON 字符串数组 (Array of Strings)。
+2. 数组长度必须与输入数组长度完全一致。
+3. 严禁在 JSON 前后添加任何文字（如"好的"、"如下"、"Output:"等）。
+4. 严禁使用 Markdown 代码块。
+5. 必须是有效的 JSON 格式。`;
+    }
+
+    const isR1 = selectedModel.includes("reasoner"); 
+    const BATCH_SIZE = 10; // 批处理大小
 
     try {
         for (let i = 0; i < globalBlocks.length; i += BATCH_SIZE) {
             const batch = globalBlocks.slice(i, i + BATCH_SIZE);
             const sourceTexts = batch.map(b => b.text);
-            let requestBody = { model: selectedModel, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: JSON.stringify(sourceTexts) }], temperature: 0.1 };
-            if (!isR1 && !selectedModel.includes("qwen")) requestBody.response_format = { type: "json_object" };
+            
+            // 构造请求体
+            let requestBody = { 
+                model: selectedModel, 
+                messages: [
+                    { role: "system", content: systemPrompt }, 
+                    { role: "user", content: JSON.stringify(sourceTexts) }
+                ], 
+                temperature: 0.1 
+            };
+            
+            // 如果支持 JSON 模式就强制开启 (R1 和本地模型除外)
+            if (!isR1 && !apiBase.includes("localhost")) {
+                requestBody.response_format = { type: "json_object" };
+            }
 
-            const response = await fetch(`${apiBase}/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(requestBody) });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            // 发起请求
+            const response = await fetch(`${apiBase}/chat/completions`, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${apiKey}` 
+                }, 
+                body: JSON.stringify(requestBody) 
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status} - 接口请求失败`);
+            
             const data = await response.json();
+            
+            // 6. 获取原始回复
             let aiRaw = data.choices[0].message.content;
-            if (isR1) aiRaw = aiRaw.replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/```json/gi, "").replace(/```/g, "").trim();
+            
+            // 🛠️ 强力清洗 (Deep Clean)
+            // 去掉 <think> 思考过程
+            aiRaw = aiRaw.replace(/<think>[\s\S]*?<\/think>/gi, "");
+            // 去掉 Markdown 代码块符号 ```json 和 ```
+            aiRaw = aiRaw.replace(/```json/gi, "").replace(/```/g, "");
+            // 去掉可能存在的 "Output:" 等前缀
+            aiRaw = aiRaw.trim();
 
             let translatedArray = [];
+            
+            // 7. 尝试解析
             try {
-                const startIdx = aiRaw.indexOf('['); const endIdx = aiRaw.lastIndexOf(']');
-                if (startIdx !== -1 && endIdx !== -1) translatedArray = JSON.parse(aiRaw.substring(startIdx, endIdx + 1));
-                else { const obj = JSON.parse(aiRaw); for (let k in obj) { if (Array.isArray(obj[k])) { translatedArray = obj[k]; break; } } }
-            } catch (e) { log(`JSON Parse Error`, 'ERR'); }
+                // 寻找最外层的方括号 []
+                const startIdx = aiRaw.indexOf('['); 
+                const endIdx = aiRaw.lastIndexOf(']');
+                
+                if (startIdx !== -1 && endIdx !== -1) {
+                    // 只截取方括号中间的内容进行解析
+                    const jsonStr = aiRaw.substring(startIdx, endIdx + 1);
+                    translatedArray = JSON.parse(jsonStr);
+                } else {
+                    // 兜底尝试：有时候 AI 会返回 { "result": [...] }
+                    const obj = JSON.parse(aiRaw); 
+                    // 找对象里是不是藏着数组
+                    for (let k in obj) { 
+                        if (Array.isArray(obj[k])) { translatedArray = obj[k]; break; } 
+                    }
+                }
+            } catch (parseErr) {
+                // 🚨 如果还是报错，把 AI 回复的内容打印出来，方便捉虫
+                console.error("❌ JSON 解析失败，AI 返回的原始内容如下:", aiRaw);
+                log(`第 ${i/BATCH_SIZE + 1} 批次解析失败 (看控制台详情)`, 'ERR');
+                continue; // 跳过这一批，继续下一批
+            }
 
+            // 8. 回填数据
             batch.forEach((block, idx) => {
                 const trans = translatedArray[idx];
-                if (trans) { if (mode === "bilingual") { block.text = `${block.text}\n${trans}`; isBilingualMode = true; } else { block.text = trans; } }
+                if (trans) { 
+                    if (mode === "bilingual") { 
+                        block.text = `${block.text}\n${trans}`; 
+                        isBilingualMode = true; 
+                    } else { 
+                        block.text = trans; // 润色模式直接覆盖
+                    } 
+                }
             });
+
+            // 更新进度条
             const pct = Math.round(((i + BATCH_SIZE) / globalBlocks.length) * 100);
             pFill.style.width = `${Math.min(pct, 100)}%`; 
         }
-        log("AI processing complete.", 'SUCCESS');
-    } catch (err) { log(`Error: ${err.message}`, 'ERR'); } finally { 
-        btnAI.innerHTML = `<span>Run AI</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`; 
+        log("AI 处理全部完成！", 'SUCCESS');
+    } catch (err) { 
+        log(`错误: ${err.message}`, 'ERR'); 
+        console.error(err);
+    } finally { 
+        // 恢复按钮
+        btnAI.innerHTML = originalBtnText; 
         btnAI.disabled = false; 
     }
 }
@@ -246,4 +347,5 @@ function readFileAutoDetect(file) {
 
         reader.onerror = () => reject("文件读取系统错误");
     });
+
 }
