@@ -86,7 +86,7 @@ window.setPos = function(val, btn) {
 window.processWithAI = async function() {
     // 1. 获取界面元素
     const apiKey = document.getElementById('apiKey').value.trim();
-    const mode = document.getElementById('aiMode').value;
+    const mode = document.getElementById('aiMode').value; // 这里的值可能是: bilingual, translate, polish
     const selectedModel = document.getElementById('modelSelect').value;
     const btnAI = document.getElementById('btnAI');
     const pFill = document.getElementById('progressFill');
@@ -94,61 +94,63 @@ window.processWithAI = async function() {
 
     // 2. 基础检查
     if (globalBlocks.length === 0) return log("请先导入字幕文件。", 'WARN');
-    // 如果是云端模型且没填 Key，报错 (Qwen/Ollama 不需要 Key)
     if (!apiKey && !selectedModel.toLowerCase().includes("qwen") && !selectedModel.toLowerCase().includes("ollama")) {
         return log("使用云端模型需要填写 API Key。", 'WARN');
     }
 
-    // 3. 智能 API 地址切换 (防止 localhost 报错)
+    // 3. 智能 API 地址切换
     let apiBase = "https://api.deepseek.com/v1";
-    // 逻辑：只有明确包含 local/ollama，或者包含 qwen 但不是 deepseek 时，才切本地
     if (selectedModel.includes("local") || selectedModel.includes("ollama") || (selectedModel.includes("qwen") && !selectedModel.includes("deepseek"))) {
         apiBase = "http://localhost:11434/v1";
         console.log("🖥️ 切换到本地模式 (Ollama)");
     }
 
-    // 4. 锁定按钮，开始运行
+    // 4. 锁定按钮
     const originalBtnText = btnAI.innerHTML;
     btnAI.innerHTML = `Running...`; 
     btnAI.disabled = true; 
     progressBar.classList.remove('hidden');
     log(`开始 AI 任务: ${mode}...`);
 
-    // 5. 定义超级严格的 System Prompt (针对润色优化)
+    // ==========================================
+    // 5. 🔥 核心修正点：提示词逻辑分流
+    // ==========================================
     let systemPrompt = "";
-    if (mode === "bilingual") {
+    
+    // 如果是“双语”或者“全译”，都需要 AI 翻译成英文
+    if (mode === "bilingual" || mode === "translate") {
         systemPrompt = `你是一个专业的字幕翻译工具。接收中文文本数组，返回英文翻译数组。
 要求：
 1. 仅返回一个纯 JSON 字符串数组 (Array of Strings)。
 2. 数组长度必须与输入数组长度完全一致 (一一对应)。
 3. 严禁输出任何解释、Markdown 代码块或额外文本。
-4. 确保 JSON 格式合法（双引号需转义）。`;
+4. 确保 JSON 格式合法（双引号需转义）。
+5. 【重要】必须翻译成通顺、地道的英文。`;
     } else {
-        // 🔥 润色模式专用 Prompt (激进版)
+        // 否则就是“润色”模式
         systemPrompt = `你是一个Netflix级别的字幕润色专家。你的目标是将由于语音识别或直译导致的生硬、碎片化的字幕，重写为自然、流畅、极具“代入感”的口语。
 
 核心处理逻辑：
 1. 【上下文连贯】：请先通读所有输入的文本数组，理解上下文语境。
-2. 【口语化重塑】：将书面语改为地道的口语（例如将"我正在做这件事"改为"我正忙着呢"）。
-3. 【修正碎片】：如果原本一句话被切分在两个数组元素中，请在保持原义的基础上，让每一段看起来都像是一个独立的短句，或者调整措辞使其在衔接时更自然。
-4. 【语气增强】：根据推测的语气（惊讶、愤怒、讽刺），适当优化用词。
+2. 【口语化重塑】：将书面语改为地道的口语。
+3. 【修正碎片】：如果原本一句话被切分在两个数组元素中，请在保持原义的基础上，让每一段看起来都像是一个独立的短句。
+4. 【语气增强】：根据推测的语气适当优化用词。
 
 绝对红线 (Deadly Strict Requirements):
 1. 必须返回纯 JSON 字符串数组 (Array of Strings)。
-2. 返回的数组长度必须与输入数组长度【严格一致】(输入50句，必须返回50句，一句不能多，一句不能少)。
-3. 严禁合并两行字幕！即使原句断得很难受，你也必须在保持行数不变的情况下，通过调整措辞来优化。
+2. 返回的数组长度必须与输入数组长度【严格一致】。
+3. 严禁合并两行字幕！
 4. 严禁输出 Markdown 或任何解释性文字。`;
     }
 
     const isR1 = selectedModel.includes("reasoner"); 
-    const BATCH_SIZE = 50; // 批处理大小
+    const BATCH_SIZE = 50; 
 
     try {
         for (let i = 0; i < globalBlocks.length; i += BATCH_SIZE) {
             const batch = globalBlocks.slice(i, i + BATCH_SIZE);
             const sourceTexts = batch.map(b => b.text);
             
-            // 构造请求体
             let requestBody = { 
                 model: selectedModel, 
                 messages: [
@@ -158,12 +160,10 @@ window.processWithAI = async function() {
                 temperature: 0.1 
             };
             
-            // 如果支持 JSON 模式就强制开启 (R1 和本地模型除外)
             if (!isR1 && !apiBase.includes("localhost")) {
                 requestBody.response_format = { type: "json_object" };
             }
 
-            // 发起请求
             const response = await fetch(`${apiBase}/chat/completions`, { 
                 method: 'POST', 
                 headers: { 
@@ -176,45 +176,59 @@ window.processWithAI = async function() {
             if (!response.ok) throw new Error(`HTTP ${response.status} - 接口请求失败`);
             
             const data = await response.json();
-            
-            // 6. 获取原始回复
             let aiRaw = data.choices[0].message.content;
             
-            // 🛠️ 强力清洗 (Deep Clean)
-            // 去掉 <think> 思考过程
+            // 清洗数据
             aiRaw = aiRaw.replace(/<think>[\s\S]*?<\/think>/gi, "");
-            // 去掉 Markdown 代码块符号 ```json 和 ```
             aiRaw = aiRaw.replace(/```json/gi, "").replace(/```/g, "");
-            // 去掉可能存在的 "Output:" 等前缀
             aiRaw = aiRaw.trim();
 
             let translatedArray = [];
             
-            // 7. 尝试解析
             try {
-                // 寻找最外层的方括号 []
                 const startIdx = aiRaw.indexOf('['); 
                 const endIdx = aiRaw.lastIndexOf(']');
                 
                 if (startIdx !== -1 && endIdx !== -1) {
-                    // 只截取方括号中间的内容进行解析
                     const jsonStr = aiRaw.substring(startIdx, endIdx + 1);
                     translatedArray = JSON.parse(jsonStr);
                 } else {
-                    // 兜底尝试：有时候 AI 会返回 { "result": [...] }
                     const obj = JSON.parse(aiRaw); 
-                    // 找对象里是不是藏着数组
-                    for (let k in obj) { 
-                        if (Array.isArray(obj[k])) { translatedArray = obj[k]; break; } 
-                    }
+                    for (let k in obj) { if (Array.isArray(obj[k])) { translatedArray = obj[k]; break; } }
                 }
             } catch (parseErr) {
-                // 🚨 如果还是报错，把 AI 回复的内容打印出来，方便捉虫
                 console.error("❌ JSON 解析失败，AI 返回的原始内容如下:", aiRaw);
-                log(`第 ${i/BATCH_SIZE + 1} 批次解析失败 (看控制台详情)`, 'ERR');
-                continue; // 跳过这一批，继续下一批
+                log(`第 ${i/BATCH_SIZE + 1} 批次解析失败`, 'ERR');
+                continue; 
             }
 
+            // 8. 回填数据
+            batch.forEach((block, idx) => {
+                const trans = translatedArray[idx];
+                if (trans) { 
+                    if (mode === "bilingual") { 
+                        block.text = `${block.text}\n${trans}`; 
+                        isBilingualMode = true; 
+                    } else { 
+                        // 如果是 "translate" (全译) 模式，这里就会把原来的中文替换成英文
+                        // 如果是 "polish" (润色) 模式，这里就会把原来的中文替换成润色后的中文
+                        block.text = trans; 
+                    } 
+                }
+            });
+
+            const pct = Math.round(((i + BATCH_SIZE) / globalBlocks.length) * 100);
+            pFill.style.width = `${Math.min(pct, 100)}%`; 
+        }
+        log("AI 处理全部完成！", 'SUCCESS');
+    } catch (err) { 
+        log(`错误: ${err.message}`, 'ERR'); 
+        console.error(err);
+    } finally { 
+        btnAI.innerHTML = originalBtnText; 
+        btnAI.disabled = false; 
+    }
+}
             // 8. 回填数据
             batch.forEach((block, idx) => {
                 const trans = translatedArray[idx];
@@ -357,5 +371,6 @@ function readFileAutoDetect(file) {
     });
 
 }
+
 
 
