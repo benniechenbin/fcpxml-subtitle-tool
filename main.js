@@ -12,13 +12,13 @@ tailwind.config = {
     }
 }
 
-// 2. 业务逻辑 (从 HTML 底部剪切过来的代码)
+// 2. 业务逻辑
 // ==========================================
 
 // 日志功能
 function log(msg, type = 'INFO') {
     const consoleDiv = document.getElementById('consoleLog');
-    if (!consoleDiv) return; // 防止页面未加载完成报错
+    if (!consoleDiv) return; 
     const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
     const line = document.createElement('div');
     
@@ -34,17 +34,16 @@ function log(msg, type = 'INFO') {
 
 let globalBlocks = []; 
 let isBilingualMode = false;
-let currentFileName = "Untitled"; // 👈 新增这一行，用来记名字
-// 注意：这里我们稍后在 DOMContentLoaded 事件中绑定监听器，防止找不到元素
+let currentFileName = "Untitled"; 
 
-// 🔄 升级版 processFile：支持异步等待编码识别
+// 🔄 升级版 processFile
 async function processFile(file) {
     currentFileName = file.name.replace(/\.[^/.]+$/, "");
     log(`Reading file: ${file.name}`);
     const ext = file.name.split('.').pop().toLowerCase();
     
     try {
-        // 1. 调用万能解码器获取内容 (不管是 GBK 还是 UTF-8，这里拿到的都是标准文本)
+        // 1. 调用万能解码器
         const content = await readFileAutoDetect(file);
 
         // 2. 开始解析
@@ -60,9 +59,12 @@ async function processFile(file) {
         globalBlocks.sort((a, b) => a.start - b.start);
         log(`Parsed ${globalBlocks.length} subtitles.`, 'SUCCESS');
         
+        // 更新右上角文件信息小标签
         const fileInfo = document.getElementById('fileInfo');
-        fileInfo.innerText = file.name; 
-        fileInfo.classList.remove('hidden');
+        if (fileInfo) {
+            fileInfo.innerText = file.name; 
+            fileInfo.classList.remove('hidden');
+        }
         isBilingualMode = false;
 
     } catch (err) { 
@@ -71,7 +73,7 @@ async function processFile(file) {
     }
 }
 
-// 将全局函数挂载到 window 对象上，以便 HTML 中的 onclick 可以调用
+// 挂载 setPos
 window.setPos = function(val, btn) {
     document.getElementById('yValue').value = val;
     document.querySelectorAll('.pos-btn').forEach(b => { 
@@ -84,40 +86,31 @@ window.setPos = function(val, btn) {
 }
 
 window.processWithAI = async function() {
-    // 1. 获取界面元素
     const apiKey = document.getElementById('apiKey').value.trim();
-    const mode = document.getElementById('aiMode').value; // 这里的值可能是: bilingual, translate, polish
+    const mode = document.getElementById('aiMode').value;
     const selectedModel = document.getElementById('modelSelect').value;
     const btnAI = document.getElementById('btnAI');
     const pFill = document.getElementById('progressFill');
     const progressBar = document.getElementById('progressBar');
 
-    // 2. 基础检查
     if (globalBlocks.length === 0) return log("请先导入字幕文件。", 'WARN');
     if (!apiKey && !selectedModel.toLowerCase().includes("qwen") && !selectedModel.toLowerCase().includes("ollama")) {
         return log("使用云端模型需要填写 API Key。", 'WARN');
     }
 
-    // 3. 智能 API 地址切换
     let apiBase = "https://api.deepseek.com/v1";
     if (selectedModel.includes("local") || selectedModel.includes("ollama") || (selectedModel.includes("qwen") && !selectedModel.includes("deepseek"))) {
         apiBase = "http://localhost:11434/v1";
         console.log("🖥️ 切换到本地模式 (Ollama)");
     }
 
-    // 4. 锁定按钮
     const originalBtnText = btnAI.innerHTML;
     btnAI.innerHTML = `Running...`; 
     btnAI.disabled = true; 
     progressBar.classList.remove('hidden');
     log(`开始 AI 任务: ${mode}...`);
 
-    // ==========================================
-    // 5. 🔥 核心修正点：提示词逻辑分流
-    // ==========================================
     let systemPrompt = "";
-    
-    // 如果是“双语”或者“全译”，都需要 AI 翻译成英文
     if (mode === "bilingual" || mode === "translate") {
         systemPrompt = `你是一个专业的字幕翻译工具。接收中文文本数组，返回英文翻译数组。
 要求：
@@ -127,15 +120,12 @@ window.processWithAI = async function() {
 4. 确保 JSON 格式合法（双引号需转义）。
 5. 【重要】必须翻译成通顺、地道的英文。`;
     } else {
-        // 否则就是“润色”模式
         systemPrompt = `你是一个Netflix级别的字幕润色专家。你的目标是将由于语音识别或直译导致的生硬、碎片化的字幕，重写为自然、流畅、极具“代入感”的口语。
-
 核心处理逻辑：
 1. 【上下文连贯】：请先通读所有输入的文本数组，理解上下文语境。
 2. 【口语化重塑】：将书面语改为地道的口语。
 3. 【修正碎片】：如果原本一句话被切分在两个数组元素中，请在保持原义的基础上，让每一段看起来都像是一个独立的短句。
 4. 【语气增强】：根据推测的语气适当优化用词。
-
 绝对红线 (Deadly Strict Requirements):
 1. 必须返回纯 JSON 字符串数组 (Array of Strings)。
 2. 返回的数组长度必须与输入数组长度【严格一致】。
@@ -178,7 +168,6 @@ window.processWithAI = async function() {
             const data = await response.json();
             let aiRaw = data.choices[0].message.content;
             
-            // 清洗数据
             aiRaw = aiRaw.replace(/<think>[\s\S]*?<\/think>/gi, "");
             aiRaw = aiRaw.replace(/```json/gi, "").replace(/```/g, "");
             aiRaw = aiRaw.trim();
@@ -188,7 +177,6 @@ window.processWithAI = async function() {
             try {
                 const startIdx = aiRaw.indexOf('['); 
                 const endIdx = aiRaw.lastIndexOf(']');
-                
                 if (startIdx !== -1 && endIdx !== -1) {
                     const jsonStr = aiRaw.substring(startIdx, endIdx + 1);
                     translatedArray = JSON.parse(jsonStr);
@@ -202,7 +190,6 @@ window.processWithAI = async function() {
                 continue; 
             }
 
-            // 8. 回填数据
             batch.forEach((block, idx) => {
                 const trans = translatedArray[idx];
                 if (trans) { 
@@ -210,8 +197,6 @@ window.processWithAI = async function() {
                         block.text = `${block.text}\n${trans}`; 
                         isBilingualMode = true; 
                     } else { 
-                        // 如果是 "translate" (全译) 模式，这里就会把原来的中文替换成英文
-                        // 如果是 "polish" (润色) 模式，这里就会把原来的中文替换成润色后的中文
                         block.text = trans; 
                     } 
                 }
@@ -229,7 +214,6 @@ window.processWithAI = async function() {
         btnAI.disabled = false; 
     }
 }
-          
 
 window.exportFCPXML = function() {
     if (globalBlocks.length === 0) return log("Nothing to export.", 'WARN');
@@ -281,71 +265,63 @@ document.addEventListener('DOMContentLoaded', () => {
         fileInput.addEventListener('change', function() { if(this.files[0]) processFile(this.files[0]); });
     }
 
+    // 🔴 修复的拖拽逻辑：只绑定在虚线框上，更稳定
     if (dropZone) {
-        document.body.addEventListener('dragover', e => { e.preventDefault(); });
-        document.body.addEventListener('drop', e => { e.preventDefault(); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+        // 阻止默认行为（防止浏览器直接打开文件）
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // 拖拽处理
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files[0]) processFile(files[0]);
+        }
     }
     
     // 清空日志按钮
     const clearBtn = document.querySelector('button[onclick*="innerHTML=\'\'"]');
     if(clearBtn) clearBtn.onclick = () => document.getElementById('consoleLog').innerHTML = '';
 });
-/**
- * 🕵️‍♂️ 万能文件读取器 (终极版)
- * 逻辑：尝试 UTF-8 -> 失败则尝试 GBK -> 失败则尝试 Big5 -> 兜底
- */
+
+// 万能文件读取器
 function readFileAutoDetect(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        
-        // 关键：读取为二进制流，不要让浏览器自作主张
         reader.readAsArrayBuffer(file);
-        
         reader.onload = (e) => {
             const buffer = e.target.result;
-            
-            // 1. 第一关：尝试标准 UTF-8 (严格模式)
             const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
             try {
                 const text = utf8Decoder.decode(buffer);
                 console.log("✅ 识别编码: UTF-8");
-                resolve(text);
-                return;
-            } catch (err) {
-                console.log("⚠️ 非 UTF-8，尝试 GBK...");
-            }
-
-            // 2. 第二关：尝试 GB18030 (中文简体通用，兼容 GBK/GB2312)
+                resolve(text); return;
+            } catch (err) { console.log("⚠️ 非 UTF-8，尝试 GBK..."); }
             const gbkDecoder = new TextDecoder('gb18030', { fatal: true });
             try {
                 const text = gbkDecoder.decode(buffer);
-                console.log("✅ 识别编码: GB18030 (中文简体)");
-                resolve(text);
-                return;
-            } catch (err) {
-                console.log("⚠️ 非 GBK，尝试 Big5...");
-            }
-
-            // 3. 第三关：尝试 Big5 (中文繁体)
+                console.log("✅ 识别编码: GB18030");
+                resolve(text); return;
+            } catch (err) { console.log("⚠️ 非 GBK，尝试 Big5..."); }
             const big5Decoder = new TextDecoder('big5', { fatal: true });
             try {
                 const text = big5Decoder.decode(buffer);
-                console.log("✅ 识别编码: Big5 (中文繁体)");
-                resolve(text);
-                return;
+                console.log("✅ 识别编码: Big5");
+                resolve(text); return;
             } catch (err) {
-                console.warn("❌ 无法识别编码，尝试强制 UTF-8 读取");
-                // 4. 最后的倔强：非严格模式读取
+                console.warn("❌ 无法识别编码，强制 UTF-8");
                 const fallbackDecoder = new TextDecoder('utf-8');
                 resolve(fallbackDecoder.decode(buffer));
             }
         };
-
         reader.onerror = () => reject("文件读取系统错误");
     });
-
 }
-
-
-
-
