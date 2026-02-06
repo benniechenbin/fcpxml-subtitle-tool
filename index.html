@@ -6,38 +6,45 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-        
-        gtag('config', 'G-0XZ6NT2BZL');
+      gtag('config', 'G-0XZ6NT2BZL');
     </script>
-    <meta name="google-site-verification" content="CgIpq-S_F4l0KTgkon94AU8VP_RYPmrnyXDp1D6esrE" />
+    
+    <!-- ========== Meta & Title ========== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCPXML Subtitle Tool | Free SRT to Final Cut Pro Converter</title>
     
-    <title>FCPXML Subtitle Tool | Free SRT to Final Cut Pro Converter (DeepSeek AI)</title>
-    
-    <meta name="description" content="Free online tool to convert SRT/ASS subtitles to FCPXML for Final Cut Pro. Powered by DeepSeek AI for bilingual translation and auto-encoding detection. No installation required.">
-    <meta name="keywords" content="fcpxml, srt to fcpxml, final cut pro subtitles, deepseek ai, subtitle converter, macos video editing, srt转fcpxml, 字幕转换工具">
-    <meta name="author" content="Level 1 Maker">
-
-    <meta property="og:title" content="FCPXML Subtitle Tool - AI Powered">
-    <meta property="og:description" content="Convert SRT subtitles to FCPXML instantly. Support DeepSeek/Ollama.">
-    <meta property="og:image" content="https://benniechenbin.github.io/fcpxml-subtitle-tool/screenshot.png">
-    <meta property="og:url" content="https://benniechenbin.github.io/fcpxml-subtitle-tool/">
-    
+    <!-- ========== Tailwind & Theme ========== -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
+                    colors: {
+                        gray: { 750: '#2d2d2d', 850: '#1e1e1e', 900: '#18181b', 950: '#09090b' },
+                        primary: { 500: '#3b82f6', 600: '#2563eb', 400: '#60a5fa' } // 补全 400
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- ========== Local Assets ========== -->
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
 </head>
 <body class="bg-gray-950 text-gray-300 font-sans min-h-screen flex items-center justify-center p-6">
 
     <div class="w-full max-w-4xl flex flex-col gap-6">
-        
+        <!-- ========== Header / Status Bar ========== -->
         <div class="flex items-center justify-between border-b border-gray-800 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold font-mono">F</div>
                 <div>
                     <h1 class="text-white font-semibold text-lg tracking-tight leading-none">FCPXML Subtitle Tool</h1>
-                    <p class="text-[10px] text-gray-500 font-mono mt-1">v1.0.0 PUBLIC RELEASE</p>
+                    <p class="text-[10px] text-gray-500 font-mono mt-1">v1.1.0 STABLE</p>
                 </div>
             </div>
             <div class="flex items-center gap-2 bg-gray-900 px-3 py-1.5 rounded-full border border-gray-800">
@@ -46,140 +53,355 @@
             </div>
         </div>
 
+        <!-- ========== Main Layout: Controls + Console ========== -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            
+            <!-- ===== Left: Subtitle & Style Controls ===== -->
             <div class="md:col-span-8 space-y-4">
-                
+                <!-- Upload / Drop Zone -->
                 <div class="group relative">
-                    <label class="block h-28 border border-dashed border-gray-700 bg-gray-900/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-gray-800/80 transition-all">
-                        <svg class="w-6 h-6 text-gray-500 mb-2 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <span class="text-sm text-gray-400 font-medium">点击或拖入字幕文件</span>
-                        <span class="text-xs text-gray-600 mt-1 font-mono">SRT / ASS / VTT / FCPXML</span>
+                    <label id="dropZone" class="block min-h-[112px] border-2 border-dashed border-gray-700 bg-gray-900/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-gray-800/80 transition-all">
+                        <div id="uploadPrompt" class="flex flex-col items-center">
+                            <svg class="w-6 h-6 text-gray-500 mb-2 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <span class="text-sm text-gray-400 font-medium">点击或拖入字幕文件</span>
+                            <span class="text-xs text-gray-600 mt-1 font-mono">SRT / ASS / VTT / FCPXML</span>
+                        </div>
+                        <div id="fileInfo" class="hidden flex flex-col items-center justify-center py-4">
+                            <svg class="w-10 h-10 text-primary-500 mb-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span id="fileNameDisplay" class="text-sm font-mono text-primary-400 font-bold bg-primary-500/10 px-3 py-1 rounded border border-primary-500/20"></span>
+                            <span class="text-[10px] text-gray-500 mt-2">点击或拖入新文件以替换</span>
+                        </div>
                         <input type="file" id="subFile" class="hidden" accept=".srt,.ass,.ssa,.vtt,.fcpxml,.xml">
                     </label>
-                    <div id="fileInfo" class="hidden absolute top-2 right-2 bg-primary-600 text-white text-[10px] px-2 py-0.5 rounded font-mono"></div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="pro-panel p-4 rounded-lg flex flex-col justify-between h-32">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Typography</span>
-                            <span class="text-[10px] text-gray-600 font-mono">LAYOUT</span>
-                        </div>
-                        <div class="flex gap-2 mb-3">
-                           <select id="fontName" class="pro-input flex-1 h-8 px-2 text-xs">
-                              <option value="PingFang SC">苹方-简 (PingFang SC)</option>
-                              <option value="PingFang TC">苹方-繁 (PingFang TC)</option>
-    
-                              <option value="Songti SC">宋体-简 (Songti SC)</option>
-                              <option value="Songti TC">宋体-繁 (Songti TC)</option>
-    
-                              <option value="Hiragino Sans GB">冬青黑体</option>
-                              <option value="Heiti SC">黑体-简</option>
-    
-                              <option value="Arial">Arial</option>
-                              <option value="Helvetica">Helvetica</option>
-    
-                              <option value="Source Han Sans SC">思源黑体 (Source Han Sans)</option>
-                          </select>
-                            <input type="number" id="fontSize" value="55" class="pro-input pro-input-mono w-16 h-8 px-2 text-center" title="字号">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="flex bg-gray-800 rounded border border-gray-700 p-0.5">
-                                <button onclick="setPos(450, this)" class="pos-btn px-2 py-0.5 text-xs text-gray-400 hover:text-white rounded-sm transition">Top</button>
-                                <button onclick="setPos(0, this)" class="pos-btn px-2 py-0.5 text-xs text-gray-400 hover:text-white rounded-sm transition">Mid</button>
-                                <button onclick="setPos(-450, this)" class="pos-btn px-2 py-0.5 text-xs bg-gray-600 text-white shadow-sm rounded-sm active">Bot</button>
+                <!-- Typography / Position / Color Controls -->
+                <div class="pro-panel p-4 rounded-lg space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-4">
+                            <div class="flex items-center h-8 gap-2">
+                                <span class="text-xs text-gray-400 w-9 shrink-0">Font</span>
+                                <div class="flex items-center bg-gray-800 rounded border border-gray-700 h-6 px-2 flex-1 min-w-0">
+                                    <select id="fontName" class="w-full bg-transparent border-none text-[10px] text-gray-300 focus:ring-0 outline-none p-0 cursor-pointer truncate">
+                                        <option value="PingFang SC" class="bg-gray-900">苹方-简</option>
+                                        <option value="PingFang TC" class="bg-gray-900">苹方-繁</option>
+                                        <option value="Songti SC" class="bg-gray-900">宋体-简</option>
+                                        <option value="Songti TC" class="bg-gray-900">宋体-繁</option>
+                                        <option value="Heiti SC" class="bg-gray-900">黑体-简</option>
+                                        <option value="Arial" class="bg-gray-900">Arial</option>
+                                        <option value="Helvetica" class="bg-gray-900">Helvetica</option>
+                                    </select>
+                                </div>
+                                <div class="pro-input flex items-center w-[50px] h-6 overflow-hidden shrink-0">
+                                    <input type="number" id="fontSize" value="55" step="1" class="flex-1 w-full bg-transparent border-none text-center text-[10px] font-mono focus:ring-0 outline-none px-0 min-w-0">
+                                    <div class="flex flex-col h-full border-l border-gray-700 shrink-0">
+                                        <button onclick="adjustValue('fontSize', 1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5l-7 7h14l-7-7z"/></svg></button>
+                                        <button onclick="adjustValue('fontSize', -1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 border-t border-gray-800 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-7-7h14l-7 7z"/></svg></button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex-1 relative">
-                                <span class="absolute left-2 top-1.5 text-[10px] text-gray-500">Y:</span>
-                                <input type="number" id="yValue" value="-450" class="pro-input pro-input-mono w-full h-7 pl-6 pr-2 text-right text-xs">
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="pro-panel p-4 rounded-lg flex flex-col justify-between h-32">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Appearance</span>
-                            <span class="text-[10px] text-gray-600 font-mono">STYLE</span>
-                        </div>
-                        <div class="flex items-center justify-between mb-3 h-8">
-                            <span class="text-xs text-gray-400">Fill Color</span>
-                            <div class="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded border border-gray-700">
-                                <input type="color" id="fontColor" value="#FFFFFF" class="color-well w-5 h-5">
-                                <span class="text-[10px] font-mono text-gray-400">#FFF</span>
+                            <div class="flex items-center h-8 gap-2">
+                                <span class="text-xs text-gray-400 w-9 shrink-0">Pos</span>
+                                <div class="flex bg-gray-800 rounded border border-gray-700 p-0.5 shrink-0">
+                                    <button class="px-2 py-0.5 text-[10px] text-gray-400 hover:text-white hover:bg-gray-700 rounded-sm transition-colors font-mono" onclick="setPos('450', this)">Top</button>
+                                    <div class="w-px h-3 bg-gray-700 my-auto mx-0.5"></div>
+                                    <button class="px-2 py-0.5 text-[10px] text-gray-400 hover:text-white hover:bg-gray-700 rounded-sm transition-colors font-mono" onclick="setPos('0', this)">Mid</button>
+                                    <div class="w-px h-3 bg-gray-700 my-auto mx-0.5"></div>
+                                    <button class="px-2 py-0.5 text-white bg-gray-600 shadow-sm rounded-sm transition-colors text-[10px] font-mono" onclick="setPos('-450', this)">Bot</button>
+                                </div>
+                                <div class="flex-1"></div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-xs text-gray-400 w-11 shrink-0 text-right">Y</span>
+                                    <div class="pro-input flex items-center w-[50px] h-6 overflow-hidden">
+                                        <input type="number" id="positionY" value="-450" step="1" class="flex-1 w-full bg-transparent border-none text-center text-[10px] font-mono focus:ring-0 outline-none px-0 min-w-0">
+                                        <div class="flex flex-col h-full border-l border-gray-700 shrink-0">
+                                            <button onclick="adjustValue('positionY', 10)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5l-7 7h14l-7-7z"/></svg></button>
+                                            <button onclick="adjustValue('positionY', -10)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 border-t border-gray-800 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-7-7h14l-7 7z"/></svg></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center h-8 gap-2">
+                                <span class="text-xs text-gray-400 w-9 shrink-0">Align</span>
+                                <div class="flex bg-gray-800 rounded border border-gray-700 p-0.5">
+                                    <button class="w-8 h-6 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-sm transition-colors" title="Left" onclick="setAlign('left', this)">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"></path></svg>
+                                    </button>
+                                    <div class="w-px h-3 bg-gray-700 my-auto mx-0.5"></div>
+                                    <button class="w-8 h-6 flex items-center justify-center text-white bg-gray-600 shadow-sm rounded-sm transition-colors" title="Center" onclick="setAlign('center', this)">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M4 18h16"></path></svg>
+                                    </button>
+                                    <div class="w-px h-3 bg-gray-700 my-auto mx-0.5"></div>
+                                    <button class="w-8 h-6 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-sm transition-colors" title="Right" onclick="setAlign('right', this)">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"></path></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between h-8">
-                            <div class="flex items-center gap-2">
+
+                        <div class="space-y-4 md:border-l md:border-gray-800 md:pl-4">
+                            <div class="flex items-center justify-between h-8">
+                                <span class="text-xs text-gray-400">Fill</span> 
+                                <div class="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded border border-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500 w-11 text-left">Opacity</span>
+                                        <div class="pro-input flex items-center w-[50px] h-6 overflow-hidden">
+                                            <input type="text" id="opacity" value="100%" class="flex-1 w-full bg-transparent border-none text-center text-[10px] font-mono focus:ring-0 outline-none px-0 min-w-0" onchange="if(!this.value.includes('%')) this.value += '%'" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                            <div class="flex flex-col h-full border-l border-gray-700 shrink-0">
+                                                <button onclick="adjustValue('opacity', 1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5l-7 7h14l-7-7z"/></svg></button>
+                                                <button onclick="adjustValue('opacity', -1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 border-t border-gray-800 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-7-7h14l-7 7z"/></svg></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-px h-4 bg-gray-700 mx-1"></div>
+                                    <input type="color" id="fontColor" value="#FFFFFF" class="color-well w-10 h-5">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between h-8">
                                 <span class="text-xs text-gray-400">Stroke</span>
-                                <input type="number" id="strokeWidth" value="2.5" step="0.5" class="pro-input pro-input-mono w-12 h-6 px-1 text-center text-xs">
+                                <div class="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded border border-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500 w-11 text-left">Width</span> 
+                                        <div class="pro-input flex items-center w-[50px] h-6 overflow-hidden">
+                                            <input type="number" id="strokeWidth" value="2.5" step="0.1" class="flex-1 w-full bg-transparent border-none text-center text-[10px] font-mono focus:ring-0 outline-none px-0 min-w-0">
+                                            <div class="flex flex-col h-full border-l border-gray-700 shrink-0">
+                                                <button onclick="adjustValue('strokeWidth', 0.1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5l-7 7h14l-7-7z"/></svg></button>
+                                                <button onclick="adjustValue('strokeWidth', -0.1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 border-t border-gray-800 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-7-7h14l-7 7z"/></svg></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-px h-4 bg-gray-700 mx-1"></div> 
+                                    <input type="color" id="strokeColor" value="#000000" class="color-well w-10 h-5">
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded border border-gray-700">
-                                <input type="color" id="strokeColor" value="#000000" class="color-well w-5 h-5">
-                                <span class="text-[10px] font-mono text-gray-400">#000</span>
+
+                            <div class="flex items-center justify-between h-8 group">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                     <input type="checkbox" id="shadowEnable" class="rounded border-gray-700 bg-gray-800 text-primary-600 focus:ring-0 w-3 h-3 cursor-pointer transition-colors group-hover:border-gray-500">
+                                     <span class="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">Shadow</span>
+                                </label>
+                                
+                                <div class="flex items-center gap-2 bg-gray-800 px-2 py-1 rounded border border-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-gray-500 w-11 text-left">Blur</span>
+                                        <div class="pro-input flex items-center w-[50px] h-6 overflow-hidden">
+                                            <input type="number" id="shadowBlur" value="5" min="0" step="1" class="flex-1 w-full bg-transparent border-none text-center text-[10px] font-mono focus:ring-0 outline-none px-0 min-w-0">
+                                            <div class="flex flex-col h-full border-l border-gray-700 shrink-0">
+                                                <button onclick="adjustValue('shadowBlur', 1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5l-7 7h14l-7-7z"/></svg></button>
+                                                <button onclick="adjustValue('shadowBlur', -1)" class="h-3 px-0.5 hover:bg-gray-700 text-gray-500 border-t border-gray-800 flex items-center justify-center"><svg class="w-1.5 h-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-7-7h14l-7 7z"/></svg></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-px h-4 bg-gray-700 mx-1"></div>
+                                    <input type="color" id="shadowColor" value="#000000" class="color-well w-10 h-5">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="pro-panel p-4 rounded-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-primary-600"></div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <select id="modelSelect" class="pro-input h-8 px-2 text-xs flex-1 bg-gray-900">
-                            <optgroup label="Cloud API">
-                                <option value="deepseek-chat">DeepSeek V3 (Fast)</option>
-                                <option value="deepseek-reasoner">DeepSeek R1 (Reasoning)</option>
-                            </optgroup>
-                            <optgroup label="Local Host">
-                                <option value="qwen2.5:7b">Ollama (Local)</option>
-                            </optgroup>
-                        </select>
-                        <select id="aiMode" class="pro-input h-8 px-2 text-xs w-32 bg-gray-900 font-medium">
-                            <option value="bilingual">双语对照 (Dual)</option>
-                            <option value="translate">全译 (Trans)</option>
-                            <option value="polish">润色 (Polish)</option>
-                        </select>
+                <!-- Project FPS -->
+                <div class="pro-panel p-3 rounded-lg flex items-center justify-between bg-gray-900/50">
+                    <span class="text-xs font-semibold text-gray-400">项目帧率 (FPS)</span>
+                    <select id="fpsSelect" class="pro-input w-32 h-8 px-2 text-xs font-mono bg-gray-800 border-gray-700 cursor-pointer focus:border-primary-500">
+                        <option value="23.976">23.98 fps (NTSC)</option>
+                        <option value="24">24.00 fps (Cinema)</option>
+                        <option value="25">25.00 fps (PAL)</option>
+                        <option value="29.97">29.97 fps (NTSC)</option>
+                        <option value="30" selected>30.00 fps</option>
+                        <option value="50">50.00 fps</option> 
+                        <option value="59.94">59.94 fps</option> 
+                        <option value="60">60.00 fps</option>
+                    </select>
+                </div>
+
+                <!-- AI Configuration Panel -->
+                <div class="pro-panel p-4 rounded-lg relative overflow-hidden space-y-4">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary-500 to-purple-600"></div>
+                    
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Configuration</h3>
+                        <span class="text-[10px] text-gray-600 bg-gray-900 px-2 py-0.5 rounded border border-gray-800">Local & Cloud</span>
                     </div>
-                    <div class="flex gap-2">
-                        <input type="password" id="apiKey" placeholder="sk-..." class="pro-input pro-input-mono flex-1 h-9 px-3 text-xs tracking-wider">
-                        <button id="btnAI" onclick="processWithAI()" class="bg-white text-black hover:bg-gray-200 font-medium text-xs px-4 py-1.5 rounded shadow-sm transition-colors flex items-center gap-2">
-                            <span>Run AI</span>
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                
+                    <div class="space-y-1">
+                        <label class="text-[10px] text-gray-500">Service Provider</label>
+                        <div class="relative">
+                            <select id="aiProvider" onchange="updateProviderUI()" class="pro-input w-full h-8 px-2 text-xs bg-gray-900 focus:border-primary-500 appearance-none">
+                                <option value="deepseek">DeepSeek (Official)</option>
+                                <option value="openai">OpenAI (Official)</option>
+                                <option value="google">Google (Gemini)</option>
+                                <option value="ollama">Ollama (Local)</option>
+                                <option value="custom">Custom (Compatible)</option>
+                                <option value="webllm">Browser Local (WebLLM)</option>
+                            </select>
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="aiDynamicFields" class="space-y-3">
+                        
+                        <div class="space-y-1 hidden" id="field-url"> 
+                            <label class="text-[10px] text-gray-500">API Endpoint URL</label>
+                            <input type="text" id="customUrl" placeholder="https://api.openai.com/v1" class="pro-input w-full h-8 px-2 text-xs font-mono text-gray-400">
+                        </div>
+                    
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-gray-500">Model Selection</label>
+                            <div class="relative">
+                                <select id="aiModel" class="pro-input w-full h-8 px-2 text-xs bg-gray-900 focus:border-primary-500 appearance-none">
+                                    <option value="deepseek-chat">DeepSeek V3 (Recommended)</option>
+                                </select>
+                                <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    </div>
+                
+                    <!-- API Key & Connection -->
+                    <div class="space-y-1" id="field-key">
+                        <label class="text-[10px] text-gray-500 flex justify-between">
+                            <span>API Key</span>
+                            <span class="text-gray-600 cursor-pointer hover:text-primary-400 transition-colors" onclick="alert('Key is stored locally in RAM only.')">Security?</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="password" id="apiKey" placeholder="sk-..." class="pro-input flex-1 h-8 px-2 text-xs font-mono">
+                            <button class="w-8 h-8 flex items-center justify-center bg-gray-800 border border-gray-700 rounded hover:bg-gray-700 hover:text-green-400 transition-colors" title="Check Connection">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                
+                    <!-- WebLLM Download Progress -->
+                    <div id="webllmStatus" class="hidden space-y-1 bg-gray-900/50 p-2 rounded border border-gray-800">
+                        <div class="flex justify-between text-[10px] text-gray-400">
+                            <span>Model Download</span>
+                            <span id="webllmPercent">0%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                            <div id="webllmBar" class="h-full bg-purple-500 w-0 transition-all duration-300"></div>
+                        </div>
+                        <p class="text-[9px] text-gray-600 text-center">First run requires ~2GB download</p>
+                    </div>
+                
+                    <!-- AI Mode Selector + Trigger -->
+                    <div class="pt-2 border-t border-gray-800 space-y-3">
+    
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2">
+                                <select id="aiMode" onchange="updateModeUI()" class="pro-input w-1/3 h-9 px-2 text-xs bg-gray-900 font-medium">
+                                    <option value="translate">Translate Only</option> 
+                                    <option value="bilingual" selected>Dual Sub (Bilingual)</option>
+                                    <option value="polish">Polish (润色)</option>   
+                                </select>
+                    
+                                <select id="targetLang" class="pro-input flex-1 h-9 px-2 text-xs bg-gray-900 font-medium text-gray-300">
+                                    <option value="English" selected>To: English</option>
+                                    <option value="Chinese Simplified">To: Chinese (Simp)</option>
+                                    <option value="Japanese">To: Japanese</option>
+                                    <option value="Korean">To: Korean</option>
+                                    <option value="French">To: French</option>
+                                    <option value="Spanish">To: Spanish</option>
+                                    <option value="Russian">To: Russian</option>
+                                </select>
+                            </div>
+                    
+                            <div id="secondLangRow" class="hidden relative">
+                                <select id="targetLang2" class="pro-input w-full h-8 px-2 text-xs bg-gray-800 text-gray-400 border border-dashed border-gray-700">
+                                    <option value="none" selected>No 2nd Language (Use Source)</option>
+                                    <option value="English">And: English</option>
+                                    <option value="Chinese Simplified">And: Chinese (Simp)</option>
+                                    <option value="Japanese">And: Japanese</option>
+                                    <option value="Korean">And: Korean</option>
+                                    <option value="French">And: French</option>
+                                </select>
+                                <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[9px]">
+                                    Optional
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div id="bilingualOptions" class="flex gap-2 bg-gray-900/50 p-2 rounded border border-gray-800">
+                            <div class="flex-1 space-y-1">
+                                <label class="text-[9px] text-gray-500 uppercase">Main Sub</label>
+                                <select id="mainSub" class="pro-input w-full h-7 px-1 text-xs bg-gray-800 border-none">
+                                    <option value="target1" selected>Target Lang 1</option>
+                                    <option value="target2">Target Lang 2</option>
+                                    <option value="source">Original Text</option>
+                                </select>
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <label class="text-[9px] text-gray-500 uppercase">Secondary Sub</label>
+                                <select id="secSub" class="pro-input w-full h-7 px-1 text-xs bg-gray-800 border-none">
+                                    <option value="source">Original Text</option>
+                                    <option value="target1">Target Lang 1</option>
+                                    <option value="target2" selected>Target Lang 2</option>
+                                    <option value="none">None (Hidden)</option>
+                                </select>
+                            </div>
+                        </div>
+                    
+                        <button onclick="processWithAI()" id="btnAI" class="w-full bg-white text-black h-9 rounded text-xs font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Start Processing
                         </button>
                     </div>
-                    <div id="progressBar" class="w-full h-0.5 bg-gray-800 mt-3 rounded-full overflow-hidden hidden">
+                
+                    <!-- AI Processing Progress Bar -->
+                    <div id="progressBar" class="w-full h-0.5 bg-gray-800 rounded-full hidden overflow-hidden mt-2">
                         <div id="progressFill" class="h-full bg-primary-500 w-0 transition-all duration-300"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="md:col-span-4 flex flex-col space-y-4">
-                <div class="pro-panel rounded-lg flex-1 flex flex-col overflow-hidden min-h-[300px]">
+            <!-- ===== Right: Console Output ===== -->
+            <div class="md:col-span-4 flex flex-col h-full min-h-[400px]">
+                <div class="pro-panel rounded-lg flex-1 flex flex-col overflow-hidden">
                     <div class="bg-gray-850 border-b border-gray-800 p-2 flex justify-between items-center">
-                        <span class="text-[10px] font-semibold text-gray-500 uppercase">Console Output</span>
+                        <span class="text-[10px] font-semibold text-gray-500">CONSOLE OUTPUT</span>
                         <button onclick="document.getElementById('consoleLog').innerHTML=''" class="text-[10px] text-gray-600 hover:text-gray-400">Clear</button>
                     </div>
-                    <div id="consoleLog" class="flex-1 p-3 overflow-y-auto font-mono text-[11px] space-y-1.5 text-gray-400 bg-gray-900/30">
-                        <div class="text-gray-600">System initialized...</div>
-                        <div class="text-gray-600">Waiting for input stream...</div>
+                    <div id="consoleLog" class="flex-1 p-3 overflow-y-auto font-mono text-[11px] text-gray-400 bg-gray-900/30">
+                        <div>System ready...</div>
                     </div>
                 </div>
-                <button onclick="exportFCPXML()" class="w-full bg-primary-600 hover:bg-primary-500 text-white font-medium py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all flex justify-center items-center gap-2 text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Export FCPXML
-                </button>
+            </div>
+
+        </div>
+
+        <!-- ========== Export Controls (FCPXML / SRT / VTT) ========== -->
+        <div class="w-full mt-2">
+            <div class="relative w-full">
+                <div class="flex shadow-lg shadow-blue-900/20 rounded-lg overflow-hidden w-full">
+                    <button onclick="exportFCPXML()" class="flex-1 bg-primary-600 hover:bg-primary-500 text-white font-medium py-3.5 transition-all flex justify-center items-center gap-2 text-sm border-r border-primary-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Export FCPXML
+                    </button>
+                    <button onclick="toggleDropdown(event)" class="bg-primary-600 hover:bg-primary-500 text-white px-6 transition-all flex items-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                </div>
+
+                <div id="exportDropdown" class="hidden absolute left-0 top-full mb-2 w-full bg-gray-900 border border-gray-800 rounded-lg shadow-2xl z-50 overflow-hidden">
+                    <button onclick="exportSRT(); closeDropdown()" class="w-full text-left px-4 py-4 text-xs text-gray-400 hover:bg-gray-800 hover:text-white transition-colors border-b border-gray-800 flex items-center justify-between">
+                        <span>EXPORT SRT</span><span class="text-[10px] text-gray-600 font-mono">通用文本</span>
+                    </button>
+                    <button onclick="exportVTT(); closeDropdown()" class="w-full text-left px-4 py-4 text-xs text-gray-400 hover:bg-gray-800 hover:text-white transition-colors flex items-center justify-between">
+                        <span>EXPORT VTT</span><span class="text-[10px] text-gray-600 font-mono">网页视频</span>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
+    </div>
     <script src="main.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
-
