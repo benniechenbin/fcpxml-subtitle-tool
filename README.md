@@ -6,7 +6,7 @@ Welcome to the Core-Data-Agent-Skill! This application helps you work with Apple
 
 ## 📥 Download Now
 
-[![Download Core Data Agent Skill](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
+[![Download Core Data Agent Skill](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases%20Now-Click%20Here-brightgreen)](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
 
 ## 🌟 What You Can Do
 
@@ -81,7 +81,7 @@ If you experience any problems, please visit the Issues section of this reposito
 You can contribute to improving this application! If you have ideas or fixes, please check the contributing guidelines in this repository. Your feedback helps us to make the application better for everyone.
 
 ## 🔗 Additional Links
-- [GitHub Repository](https://github.com/benniechenbin/Core-Data-Agent-Skill)
-- [Documentation](https://github.com/benniechenbin/Core-Data-Agent-Skill/wiki)
+- [GitHub Repository](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
+- [Documentation](https://github.com/benniechenbin/Core-Data-Agent-Skill/releases)
 
 Thank you for using Core-Data-Agent-Skill!
