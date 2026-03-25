@@ -1,0 +1,87 @@
+/* =========================================
+   FCPXML Subtitle Tool - Core Styles
+   ========================================= */
+
+/* 1. 全局滚动条美化 (让右侧控制台滚动条变细、变深色) */
+::-webkit-scrollbar { 
+    width: 6px; 
+}
+::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb { 
+    background: #3f3f46; 
+    border-radius: 3px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: #52525b; 
+}
+
+/* 2. 面板基础样式 (深色背景、边框、阴影) */
+.pro-panel { 
+    background-color: #1e1e1e; 
+    border: 1px solid #27272a; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+}
+
+/* 3. 输入框基础样式 */
+.pro-input { 
+    background-color: #27272a; 
+    border: 1px solid #3f3f46; 
+    color: #e4e4e7;
+    font-family: 'Inter', sans-serif; 
+    font-size: 0.875rem; 
+    border-radius: 4px; 
+    transition: all 0.2s;
+}
+
+/* 输入框获得焦点时的高亮色 (蓝色) */
+.pro-input:focus, 
+.pro-input:focus-within { 
+    border-color: #3b82f6; 
+    outline: none; 
+    box-shadow: 0 0 0 1px #3b82f6; /* ring-1 equivalent */
+}
+
+/* 等宽字体样式 (用于数字和代码) */
+.pro-input-mono { 
+    font-family: 'JetBrains Mono', monospace; 
+}
+
+/* 4. 颜色选择器圆圈样式 */
+.color-well { 
+    -webkit-appearance: none; 
+    border: none; 
+    padding: 0; 
+    background: none; 
+    cursor: pointer; 
+}
+.color-well::-webkit-color-swatch-wrapper { 
+    padding: 0; 
+}
+.color-well::-webkit-color-swatch { 
+    border: 1px solid #3f3f46; 
+    border-radius: 4px; 
+}
+
+/* 5. 🔥 关键部分：隐藏浏览器默认的数字箭头 
+   我们要用自己画的 SVG 箭头，所以必须把系统自带的藏起来，
+   否则会出现“两个箭头”重叠的丑陋情况。
+*/
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number] {
+    -moz-appearance: textfield; /* 针对 Firefox */
+}
+
+/* 6. 进场动画 (文件上传成功时的小动画) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
