@@ -109,4 +109,3 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 ### 📄 License
 
 MIT License. Free for everyone.
-
