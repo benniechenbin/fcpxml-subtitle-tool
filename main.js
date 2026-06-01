@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 业务逻辑与全局变量
+// 0. 业务逻辑与全局变量
 // ==========================================
 
 // 日志功能
@@ -25,15 +25,22 @@ let currentFileName = "Untitled";
 let currentAlign = "center"; // 默认居中
 
 // ==========================================
-// 2. 文件处理逻辑
+// 1. 核心文件处理入口
 // ==========================================
-
 async function processFile(file) {
     currentFileName = file.name.replace(/\.[^/.]+$/, "");
     log(`Reading file: ${file.name}`);
     const ext = file.name.split('.').pop().toLowerCase();
     
+    // 👉 新增：拦截音视频文件，转交本地微服务处理
+    const mediaExts = ['mp4', 'mp3', 'wav', 'm4a', 'mov'];
+    if (mediaExts.includes(ext)) {
+        await handleMediaTranscription(file); 
+        return; // 处理完直接返回，不走下面的文本读取逻辑
+    }
+
     try {
+        // 原有逻辑：读取文本字幕
         const content = await readFileAutoDetect(file);
 
         if (ext === 'srt') globalBlocks = parseSRT(content);
@@ -48,20 +55,80 @@ async function processFile(file) {
         log(`Parsed ${globalBlocks.length} subtitles.`, 'SUCCESS');
         
         // 更新 UI
-        const fileInfo = document.getElementById('fileInfo');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const uploadPrompt = document.getElementById('uploadPrompt');
-        
-        if (fileInfo) {
-            uploadPrompt.classList.add('hidden');
-            fileInfo.classList.remove('hidden');
-            if (fileNameDisplay) fileNameDisplay.innerText = file.name;
-        }
+        updateUploadUI(file.name);
         isBilingualMode = false;
 
     } catch (err) { 
         log(`Error: ${err.message}`, 'ERR'); 
         console.error(err);
+    }
+}
+
+// ==========================================
+// 2. 提取出来的 UI 更新辅助函数 (让代码更整洁)
+// ==========================================
+function updateUploadUI(fileName) {
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    
+    if (fileInfo) {
+        uploadPrompt.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+        if (fileNameDisplay) fileNameDisplay.innerText = fileName;
+    }
+}
+
+// ==========================================
+// 3. 新增：调用 Python 后端进行语音识别
+// ==========================================
+async function handleMediaTranscription(file) {
+    const btnAI = document.getElementById('btnAI');
+    if (btnAI) btnAI.disabled = true; // 禁用翻译按钮，防止识别中途误触
+    
+    log(`检测到音视频文件，正在上传至本地 AI 引擎...`, "INFO");
+    log(`正在进行语音识别 (视视频长度可能需要几分钟，请耐心等待)...`, "WARN");
+
+    // 识别时也更新 UI，让用户看到文件已经成功拖进来了
+    updateUploadUI(file.name);
+    isBilingualMode = false;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/audio/transcribe", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`微服务报错 (状态码 ${response.status}): ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.srt_text) {
+            log("语音识别完成！", "SUCCESS");
+            
+            // 复用你原有的 SRT 解析逻辑
+            globalBlocks = parseSRT(data.srt_text);
+            
+            if (globalBlocks.length > 0) {
+                globalBlocks.sort((a, b) => a.start - b.start);
+                log(`已成功提取 ${globalBlocks.length} 条字幕！现在可以继续使用 AI 翻译或导出了。`, "SUCCESS");
+            } else {
+                log("识别成功，但未检测到任何说话声音。", "WARN");
+            }
+        } else {
+            throw new Error("微服务返回数据格式异常。");
+        }
+    } catch (error) {
+        console.error("Transcription Error:", error);
+        log(`语音识别失败: ${error.message} (请确保后台 Python 服务已启动)`, "ERR");
+    } finally {
+        if (btnAI) btnAI.disabled = false; // 恢复按钮
     }
 }
 
@@ -840,6 +907,10 @@ document.addEventListener('DOMContentLoaded', () => {
         dropZone.addEventListener('drop', e => { if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); }, false);
     }
 
+    // 页面加载完毕时，初始化一下 UI 状态
+    if (window.updateProviderUI) window.updateProviderUI();
+    if (window.updateModeUI) window.updateModeUI();
+
     // 全局变化监听 (Log Feedback)
     document.body.addEventListener('change', function(e) {
         if (e.target.type === 'file') return;
@@ -853,6 +924,14 @@ document.addEventListener('DOMContentLoaded', () => {
         else msg = `Value update: [${id}] -> ${val}`;
 
         if (!['positionY', 'fontSize', 'strokeWidth', 'opacity', 'shadowBlur'].includes(id) || e.isTrusted) log(msg);
-        if (window.updateProviderUI) window.updateProviderUI();
+        
+        // 👉 修复：只有当修改了“AI 厂商”时，才更新厂商UI（重置模型列表）
+        if (id === 'aiProvider' && window.updateProviderUI) {
+            window.updateProviderUI();
+        }
+        // 👉 修复：只有当修改了“任务模式”时，才更新模式UI（显示/隐藏双语选项）
+        if (id === 'aiMode' && window.updateModeUI) {
+            window.updateModeUI();
+        }
     });
 });

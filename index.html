@@ -15,7 +15,7 @@
     <title>FCPXML Subtitle Tool | Free SRT to Final Cut Pro Converter</title>
     
     <!-- ========== Tailwind & Theme ========== -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./tailwind.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -57,24 +57,27 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <!-- ===== Left: Subtitle & Style Controls ===== -->
             <div class="md:col-span-8 space-y-4">
-                <!-- Upload / Drop Zone -->
-                <div class="group relative">
-                    <label id="dropZone" class="block min-h-[112px] border-2 border-dashed border-gray-700 bg-gray-900/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-gray-800/80 transition-all">
-                        <div id="uploadPrompt" class="flex flex-col items-center">
-                            <svg class="w-6 h-6 text-gray-500 mb-2 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <span class="text-sm text-gray-400 font-medium">点击或拖入字幕文件</span>
-                            <span class="text-xs text-gray-600 mt-1 font-mono">SRT / ASS / VTT / FCPXML</span>
-                        </div>
-                        <div id="fileInfo" class="hidden flex flex-col items-center justify-center py-4">
-                            <svg class="w-10 h-10 text-primary-500 mb-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span id="fileNameDisplay" class="text-sm font-mono text-primary-400 font-bold bg-primary-500/10 px-3 py-1 rounded border border-primary-500/20"></span>
-                            <span class="text-[10px] text-gray-500 mt-2">点击或拖入新文件以替换</span>
-                        </div>
-                        <input type="file" id="subFile" class="hidden" accept=".srt,.ass,.ssa,.vtt,.fcpxml,.xml">
-                    </label>
-                </div>
+    <div class="group relative">
+        <label id="dropZone" class="block min-h-[112px] border-2 border-dashed border-gray-700 bg-gray-900/50 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-gray-800/80 transition-all">
+            <div id="uploadPrompt" class="flex flex-col items-center">
+                <svg class="w-6 h-6 text-gray-500 mb-2 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                
+                <span class="text-sm text-gray-400 font-medium">点击或拖入字幕 / 音视频文件</span>
+                
+                <span class="text-xs text-gray-600 mt-1 font-mono">SRT / VTT / ASS / MP4 / MP3 / WAV</span>
+            </div>
+            
+            <div id="fileInfo" class="hidden flex flex-col items-center justify-center py-4">
+                <svg class="w-10 h-10 text-primary-500 mb-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span id="fileNameDisplay" class="text-sm font-mono text-primary-400 font-bold bg-primary-500/10 px-3 py-1 rounded border border-primary-500/20"></span>
+                <span class="text-[10px] text-gray-500 mt-2">点击或拖入新文件以替换</span>
+            </div>
+            
+            <input type="file" id="subFile" class="hidden" accept=".srt,.ass,.ssa,.vtt,.fcpxml,.xml,.mp4,.mp3,.wav,.m4a,.mov">
+        </label>
+    </div>
 
                 <!-- Typography / Position / Color Controls -->
                 <div class="pro-panel p-4 rounded-lg space-y-4">
