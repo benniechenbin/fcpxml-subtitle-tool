@@ -7,6 +7,7 @@
 ---
 
 <a name="english"></a>
+
 ## 🇬🇧 English
 
 A professional, privacy-first web tool designed for **Final Cut Pro** editors. Convert standard subtitles (SRT/VTT/ASS) into FCPXML with AI-powered translation, polishing, and bilingual layout support.
@@ -14,43 +15,60 @@ A professional, privacy-first web tool designed for **Final Cut Pro** editors. C
 **✨ Client-side only. No server backend. Your API Key is safe.**
 
 ### 🖼️ Preview
+
 ![App Screenshot](screenshot.png)
 
 ### 🚀 Key Features
 
-* **多格式支持 (Multi-Format)**: Seamlessly convert `.srt`, `.vtt`, `.ass`, `.ssa` to `.fcpxml`.
-* **🤖 AI Integration**:
-    * **Cloud**: Support **DeepSeek-V3 / R1** (via API).
-    * **Local**: Support **Ollama** (e.g., Qwen 2.5) for offline privacy.
-* **双语模式 (Bilingual Mode)**: Automatically generate "Chinese (Top) + English (Bottom)" dual subtitles.
-* **🎨 Pro UI**: Dark mode interface designed for editors, with precise layout control.
-* **Privacy First**: All logic runs in your browser. No data is uploaded to any 3rd-party server (except the AI API you choose).
+- **多格式支持 (Multi-Format)**: Seamlessly convert `.srt`, `.vtt`, `.ass`, `.ssa` to `.fcpxml`.
+- **🤖 AI Integration**:
+  - **Cloud**: Support **DeepSeek-V3 / R1** (via API).
+  - **Local**: Support **Ollama** (e.g., Qwen 2.5) for offline privacy.
+- **双语模式 (Bilingual Mode)**: Automatically generate "Chinese (Top) + English (Bottom)" dual subtitles.
+- **🎨 Pro UI**: Dark mode interface designed for editors, with precise layout control.
+- **Privacy First**: All logic runs in your browser. No data is uploaded to any 3rd-party server (except the AI API you choose).
 
 ### 🛠️ Quick Start
 
 #### Option 1: Online Usage (Recommended)
+
 Visit the GitHub Pages link:
+
 > **[🔗 Click here to open FCPXML Subtitle Tool](https://benniechenbin.github.io/fcpxml-subtitle-tool/)**
 
 #### Option 2: Run Locally
+
 1.  Clone or download this repository.
 2.  Open `index.html` directly in Chrome / Safari / Edge.
 3.  No Node.js or Python environment required.
 
+### Development
+
+Node.js is only required for development checks; it is not needed to run the webpage.
+
+```bash
+npm install
+npm run check
+```
+
+Installing dependencies also enables the staged-file checks used by the pre-commit hook.
+
 ### ⚙️ Configuration
 
-* **API Key**: Enter your DeepSeek API Key in the settings panel. It is stored in memory only.
-* **Local Model**: Ensure your Ollama is running (`ollama serve`) and allow CORS if necessary.
+- **API Key**: Enter your DeepSeek API Key in the settings panel. It is stored in memory only.
+- **Local Model**: Ensure your Ollama is running (`ollama serve`) and allow CORS if necessary.
 
 ### ⚠️ Known Limitations (Important)
 
 **Regarding Complex Timelines:**
 This tool generates a "clean" subtitle sequence. It does **not** support parsing complex FCPXML exported from projects containing:
-* Compound Clips
-* Retiming (Speed Ramping)
-* Multicam Clips
+
+- Compound Clips
+- Retiming (Speed Ramping)
+- Multicam Clips
 
 **✅ Best Practice Workflow:**
+
 1.  In Final Cut Pro, select your subtitles (or create a Gap clip).
 2.  Copy them to a **New, Empty Project**.
 3.  Export XML from that new project.
@@ -60,6 +78,7 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 ---
 
 <a name="中文说明"></a>
+
 ## 🇨🇳 中文说明
 
 专为 Final Cut Pro 剪辑师打造的硬核字幕工具。支持将 SRT/VTT/ASS 字幕转换为 FCPXML，并内置 DeepSeek/Ollama 接口，实现 AI 自动翻译、润色及双语字幕排版。
@@ -68,39 +87,55 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 
 ### 🚀 核心功能
 
-* **全格式转换**: 支持 `.srt`, `.vtt`, `.ass`, `.ssa` 转 `.fcpxml`。
-* **🤖 AI 智能引擎**:
-    * **云端**: 完美支持 **DeepSeek-V3 / R1** (需填 API Key)。
-    * **本地**: 支持 **Ollama** (如 Qwen 2.5)，零成本离线运行。
-* **双语对照**: 一键生成「上中文大字 + 下英文小字」的标准双语字幕。
-* **🎨 专业界面**: 极客风深色模式，支持自定义字体（苹方/冬青）、字号、描边及垂直位置。
-* **隐私保护**: 所有代码均在浏览器本地运行，除了你调用的 AI 接口外，不经过任何第三方服务器。
+- **全格式转换**: 支持 `.srt`, `.vtt`, `.ass`, `.ssa` 转 `.fcpxml`。
+- **🤖 AI 智能引擎**:
+  - **云端**: 完美支持 **DeepSeek-V3 / R1** (需填 API Key)。
+  - **本地**: 支持 **Ollama** (如 Qwen 2.5)，零成本离线运行。
+- **双语对照**: 一键生成「上中文大字 + 下英文小字」的标准双语字幕。
+- **🎨 专业界面**: 极客风深色模式，支持自定义字体（苹方/冬青）、字号、描边及垂直位置。
+- **隐私保护**: 所有代码均在浏览器本地运行，除了你调用的 AI 接口外，不经过任何第三方服务器。
 
 ### 🛠️ 如何使用
 
 #### 方法一：在线使用 (推荐)
+
 直接访问 GitHub Pages 页面：
+
 > **[🔗 点击这里使用 FCPXML Subtitle Tool](https://benniechenbin.github.io/fcpxml-subtitle-tool/)**
 
 #### 方法二：本地运行
+
 1.  下载本仓库代码 (`Code` -> `Download ZIP`)。
 2.  解压后，双击 `index.html` 直接运行。
 3.  无需安装 Python 或 Node.js 环境。
 
+### 开发
+
+Node.js 仅用于开发检查，运行网页本身不需要 Node.js。
+
+```bash
+npm install
+npm run check
+```
+
+安装依赖后会同时启用提交前的暂存文件检查。
+
 ### ⚙️ 配置指南
 
-* **API Key**: 在工具界面填入你的 DeepSeek API Key。Key 仅在本地使用，刷新页面即焚。
-* **本地模型**: 如果使用 Ollama，请确保本地服务已启动 (`ollama serve`)，并配置了允许跨域 (CORS)。
+- **API Key**: 在工具界面填入你的 DeepSeek API Key。Key 仅在本地使用，刷新页面即焚。
+- **本地模型**: 如果使用 Ollama，请确保本地服务已启动 (`ollama serve`)，并配置了允许跨域 (CORS)。
 
 ### ⚠️ 局限性说明 (必读)
 
 **关于复杂时间线：**
 本工具生成的 XML 是标准化的扁平结构。**不支持**直接解析包含以下内容的复杂 FCPXML：
-* 复合片段 (Compound Clips)
-* 变速处理 (Retiming)
-* 多机位片段 (Multicam)
+
+- 复合片段 (Compound Clips)
+- 变速处理 (Retiming)
+- 多机位片段 (Multicam)
 
 **✅ 推荐工作流 (Best Practice):**
+
 1.  在 FCP 中选中所有需要处理的字幕。
 2.  复制 (`Cmd+C`) 并粘贴 (`Cmd+V`) 到一个**新的、空白的项目 (Project)** 中。
 3.  导出这个新项目的 XML 供本工具使用。

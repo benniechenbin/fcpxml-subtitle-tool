@@ -1,0 +1,4 @@
+node_modules/
+.husky/_/
+tailwind.js
+screenshot.png
