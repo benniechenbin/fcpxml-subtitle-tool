@@ -38,9 +38,9 @@ Visit the GitHub Pages link:
 
 #### Option 2: Run Locally
 
-1.  Clone or download this repository.
-2.  Open `index.html` directly in Chrome / Safari / Edge.
-3.  No Node.js or Python environment required.
+1. Clone or download this repository.
+2. Open `index.html` directly in Chrome / Safari / Edge.
+3. No Node.js or Python environment required.
 
 ### Development
 
@@ -69,11 +69,11 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 
 **✅ Best Practice Workflow:**
 
-1.  In Final Cut Pro, select your subtitles (or create a Gap clip).
-2.  Copy them to a **New, Empty Project**.
-3.  Export XML from that new project.
-4.  Process with this tool.
-5.  Drag the generated `.fcpxml` back into your main timeline.
+1. In Final Cut Pro, select your subtitles (or create a Gap clip).
+2. Copy them to a **New, Empty Project**.
+3. Export XML from that new project.
+4. Process with this tool.
+5. Drag the generated `.fcpxml` back into your main timeline.
 
 ---
 
@@ -105,9 +105,9 @@ This tool generates a "clean" subtitle sequence. It does **not** support parsing
 
 #### 方法二：本地运行
 
-1.  下载本仓库代码 (`Code` -> `Download ZIP`)。
-2.  解压后，双击 `index.html` 直接运行。
-3.  无需安装 Python 或 Node.js 环境。
+1. 下载本仓库代码 (`Code` -> `Download ZIP`)。
+2. 解压后，双击 `index.html` 直接运行。
+3. 无需安装 Python 或 Node.js 环境。
 
 ### 开发
 
@@ -136,10 +136,10 @@ npm run check
 
 **✅ 推荐工作流 (Best Practice):**
 
-1.  在 FCP 中选中所有需要处理的字幕。
-2.  复制 (`Cmd+C`) 并粘贴 (`Cmd+V`) 到一个**新的、空白的项目 (Project)** 中。
-3.  导出这个新项目的 XML 供本工具使用。
-4.  将生成的 `.fcpxml` 拖回原剪辑的时间轴上方即可。
+1. 在 FCP 中选中所有需要处理的字幕。
+2. 复制 (`Cmd+C`) 并粘贴 (`Cmd+V`) 到一个**新的、空白的项目 (Project)** 中。
+3. 导出这个新项目的 XML 供本工具使用。
+4. 将生成的 `.fcpxml` 拖回原剪辑的时间轴上方即可。
 
 ### 📄 License
 
